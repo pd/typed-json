@@ -4,7 +4,7 @@
   "description": "Revive JSON objects into custom types",
   "main": "index.js",
   "scripts": {
-    "test": "make jshint test"
+    "test": "make test-coveralls"
   },
   "repository": {
     "type": "git",

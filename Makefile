@@ -3,7 +3,7 @@ REPORTER = spec
 all: watch
 
 watch:
-	@nodemon -w test -w index.js -x npm test
+	@nodemon -w test -w index.js -x make jshint test test-cov
 
 jshint:
 	@jshint --config=jshint.json --reporter=jslint index.js
