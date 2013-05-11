@@ -1,2 +1,2 @@
---ui bdd
+--ui tdd
 --reporter spec

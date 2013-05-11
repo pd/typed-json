@@ -1,0 +1,8 @@
+{
+  "globalstrict":  true,
+  "camelcase":     true,
+  "newcap":        true,
+  "lastsemic":     true,
+  "browser":       false,
+  "node":          true
+}
