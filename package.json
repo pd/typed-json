@@ -1,0 +1,30 @@
+{
+  "name": "typed-json",
+  "version": "0.6.0",
+  "description": "Revive JSON objects into custom types",
+  "main": "index.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/pd/typed-json.git"
+  },
+  "keywords": [
+    "json",
+    "revive",
+    "types",
+    "type",
+    "serialize",
+    "deserialize"
+  ],
+  "author": "Kyle Hargraves",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt-simple-mocha": "~0.4.0",
+    "chai": "~1.6.0",
+    "grunt": "~0.4.1",
+    "mocha": "~1.9.0",
+    "grunt-contrib-jshint": "~0.4.3"
+  }
+}
