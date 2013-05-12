@@ -15,7 +15,7 @@ Book.fromTypedJSON = function(object) {
   return new Book(object.title);
 };
 
-var book = tj.parse('{ "_type": "Book", "title": "Debt" }');
+var book = tj.revive('{ "_type": "Book", "title": "Debt" }');
 
 book instanceof Book //=> true
 book.title //=> "Debt"
@@ -24,7 +24,7 @@ book._type //=> undefined
 
 ## API
 
-### .parse(json, { key: '_type', loader: 'fromTypedJSON', resolver: global })
+### .revive(json, { key: '_type', loader: 'fromTypedJSON', resolver: global })
 Options:
 
 - **key**: The name of the property used to identify the type.
@@ -39,7 +39,7 @@ var Deals = {
 };
 
 var json  = '[{ "kind": "coupon", "discount": "10%" }, { "kind": "sale", "discount": "25%" }]';
-var deals = tj.parse(json, {
+var deals = tj.revive(json, {
   key: "kind",
   resolver: function(kind) { return Deals[kind.titleCase()]; }
 });
@@ -64,7 +64,7 @@ var customDeserializer = function(object, type, key) {
   else andSoOn();
 };
 
-var transport = tj.parse('{ "_type": "Bike", "color": "red" }', {
+var transport = tj.revive('{ "_type": "Bike", "color": "red" }', {
   loader: customDeserializer
 });
 transport instanceof Cycle //=> true
