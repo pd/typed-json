@@ -1,4 +1,7 @@
 # typed-json
+[![Build Status](https://travis-ci.org/pd/typed-json.png?branch=master)](https://travis-ci.org/pd/typed-json)
+[![Coverage Status](https://coveralls.io/repos/pd/typed-json/badge.png?branch=master)](https://coveralls.io/r/pd/typed-json?branch=master)
+
 Easily generate a `reviver` for [JSON.parse][json-parse] that can convert matching JSON objects to the type of your choosing.
 
 `typed-json` is not an extension of JSON. It does not alter or augment the JSON syntax. It is not a modified JSON parser. It uses the native `reviver` feature of `JSON.parse` to call out to *your* code when it encounters an object with the property you specify. It does not know how to instantiate your class or rebuild an object graph. It just makes it simpler for you to do so.
