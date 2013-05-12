@@ -3,7 +3,7 @@ REPORTER = spec
 all: watch
 
 watch:
-	@nodemon -w test -w index.js -x make jshint test test-cov
+	@nodemon -w test -w index.js -x make jshint test cov
 
 jshint:
 	@jshint --config=jshint.json --reporter=jslint index.js
@@ -14,8 +14,9 @@ test:
 lib-cov:
 	jscoverage index.js index-cov.js
 
-test-cov: lib-cov
+cov: lib-cov
 	@COVERAGE_RUN=1 $(MAKE) test REPORTER=html-cov > coverage.html
+	echo Code coverage report generated in coverage.html.
 	rm index-cov.js
 
 test-coveralls: lib-cov

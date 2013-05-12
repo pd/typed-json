@@ -1,6 +1,5 @@
 var assert = require('chai').assert;
-var tj = process.env.COVERAGE_RUN ? require('../index-cov')
-       : require('../index');
+var tj = process.env.COVERAGE_RUN ? require('../index-cov') : require('../index');
 
 var T  = {},
     NS = { T: T };
