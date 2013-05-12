@@ -92,3 +92,5 @@ You just want to load that data structure you wrote to disk back into your appli
 I've written a small set of [matcha][matcha] benchmarks in [test/benchmarks.js][benches] so you can get a feel of just what performance penalty you'll be facing. After you've run `npm install .`, just run `make bench`.
 
 [json-parse]: https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/JSON/parse
+[matcha]: https://github.com/logicalparadox/matcha
+[benches]: https://github.com/pd/typed-json/blob/master/test/benchmarks.js
