@@ -103,6 +103,32 @@ suite('revival', function() {
     assert.equal(obj, 'pass');
   });
 
+  test('use a different function name than fromTypedJSON', function() {
+    T.deserialize = function(obj) {
+      assert.deepEqual(obj, { diff: 'fn-name' });
+      return 'alternate-pass';
+    };
+
+    assert.equal(reviveNS('{ "_type": "T", "diff": "fn-name" }', { fn: 'deserialize' }),
+                 'alternate-pass');
+  });
+
+  test('use a provided function instead of searching for fromTypedJSON', function() {
+    var loader = function(value, type, key) {
+      assert.equal(key, '_type');
+      assert.deepEqual(value, { custom: 'deserializer' });
+
+      if (type === 'Foo') return { foo: true };
+      return { foo: false };
+    };
+
+    assert.deepEqual(tj.revive('{ "_type": "Foo", "custom": "deserializer" }', { fn: loader }),
+                     { foo: true });
+
+    assert.deepEqual(tj.revive('{ "_type": "Bar", "custom": "deserializer" }', { fn: loader }),
+                     { foo: false });
+  });
+
   test('deep revival', function() {
     var A = {
       fromTypedJSON: function() { return 'A' }

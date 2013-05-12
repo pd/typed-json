@@ -3,7 +3,8 @@
 var tj = module.exports = {
   defaults: {
     key: '_type',
-    ns: global
+    ns:  global,
+    fn:  'fromTypedJSON'
   }
 };
 
@@ -26,6 +27,7 @@ tj.revive = function(json, options) {
 tj.reviver = function(options) {
   options = options || {};
   var ns      = options.ns  || tj.defaults.ns,
+      fn      = options.fn  || tj.defaults.fn,
       typeKey = options.key || tj.defaults.key;
 
   return function(key, value) {
@@ -38,15 +40,23 @@ tj.reviver = function(options) {
     if (typeof id === 'undefined')
       return value;
 
+    if (typeof fn === 'function') {
+      delete value[typeKey];
+      return fn(value, id, typeKey);
+    }
+
     if (typeof ns === 'function')
       type = ns.call(undefined, id, typeKey, value);
     else
       type = ns[id];
 
-    if (!type || typeof type.fromTypedJSON !== 'function')
+    if (!type)
+      return value;
+
+    if (typeof type[fn] !== 'function')
       return value;
 
     delete value[typeKey];
-    return type.fromTypedJSON(value, id, typeKey);
+    return type[fn](value, id, typeKey);
   };
 };
