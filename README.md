@@ -84,5 +84,11 @@ user instanceof app.models.User
 //=> true
 ~~~~
 
+## Performance
+Asking `JSON.parse` to use a `reviver` is *not* cheap; a reviver which does absolutely nothing but return the value it receives will cut performance by at least half. Add in the logic of locating types, and the overhead of constructing new objects, and you're easily down to 20-30% the performance of raw JSON loading. If you have very high performance demands, reconstructing object graphs is probably not what you want to be doing.
+
+You just want to load that data structure you wrote to disk back into your application next time you start it? Yep, this will work just fine for you.
+
+I've written a small set of [matcha][matcha] benchmarks in [test/benchmarks.js][benches] so you can get a feel of just what performance penalty you'll be facing. After you've run `npm install .`, just run `make bench`.
 
 [json-parse]: https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/JSON/parse

@@ -11,6 +11,9 @@ jshint:
 test:
 	@./node_modules/.bin/mocha --reporter $(REPORTER) test/typed_json_test.js
 
+bench:
+	@./node_modules/.bin/matcha test/benchmarks.js
+
 lib-cov:
 	jscoverage index.js index-cov.js
 
