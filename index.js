@@ -2,9 +2,9 @@
 
 var tj = module.exports = {
   defaults: {
-    key: '_type',
-    ns:  global,
-    fn:  'fromTypedJSON'
+    resolver: global,
+    loader:   'fromTypedJSON',
+    key:      '_type'
   }
 };
 
@@ -26,9 +26,9 @@ tj.revive = function(json, options) {
  */
 tj.reviver = function(options) {
   options = options || {};
-  var ns      = options.ns  || tj.defaults.ns,
-      fn      = options.fn  || tj.defaults.fn,
-      typeKey = options.key || tj.defaults.key;
+  var resolver = options.resolver || tj.defaults.resolver,
+      loader   = options.loader   || tj.defaults.loader,
+      typeKey  = options.key      || tj.defaults.key;
 
   return function(key, value) {
     var id, type;
@@ -40,23 +40,23 @@ tj.reviver = function(options) {
     if (typeof id === 'undefined')
       return value;
 
-    if (typeof fn === 'function') {
+    if (typeof loader === 'function') {
       delete value[typeKey];
-      return fn(value, id, typeKey);
+      return loader(value, id, typeKey);
     }
 
-    if (typeof ns === 'function')
-      type = ns.call(undefined, id, typeKey, value);
+    if (typeof resolver === 'function')
+      type = resolver.call(undefined, id, typeKey, value);
     else
-      type = ns[id];
+      type = resolver[id];
 
     if (!type)
       return value;
 
-    if (typeof type[fn] !== 'function')
+    if (typeof type[loader] !== 'function')
       return value;
 
     delete value[typeKey];
-    return type[fn](value, id, typeKey);
+    return type[loader](value, id, typeKey);
   };
 };

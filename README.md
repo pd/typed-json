@@ -24,22 +24,24 @@ book._type //=> undefined
 
 ## API
 
-### .parse(json, { key: '_type', ns: global })
+### .parse(json, { key: '_type', loader: 'fromTypedJSON', resolver: global })
 Options:
 
 - **key**: The name of the property used to identify the type.
-- **ns**: The namespace in which to resolve types. Alternatively, a function that will return the object on which to find the `fromTypedJSON` function.
+- **loader**:  If a string, it is the name of the function to call after identifying a type using the `resolver`. If a function, it will be called directly to deserialize the current JSON object.
+- **resolver**: If an object, type names are expected to correspond to properties of the object (eg, if `resolver: { Foo: ..., Bar: ... }`, types `Foo` and `Bar` are available. If a function, it will be called with the type name encountered, and is expected to return an object that responds to the `loader` method, which will be used to deserialize the object.
 
+#### Custom key name and type lookup
 ~~~~js
 var Deals = {
   Coupon: { fromTypedJSON: ... },
   Sale:   { fromTypedJSON: ... }
 };
 
-var json  = '[{ "kind": "Coupon", "discount": "10%" }, { "kind": "Sale", "discount": "25%" }]';
+var json  = '[{ "kind": "coupon", "discount": "10%" }, { "kind": "sale", "discount": "25%" }]';
 var deals = tj.parse(json, {
   key: "kind",
-  ns: function(kind) { return Deals[kind]; }
+  resolver: function(kind) { return Deals[kind.titleCase()]; }
 });
 
 // Calls Deals['Coupon'].fromTypedJSON({ discount: '10%' })
@@ -48,7 +50,23 @@ var deals = tj.parse(json, {
 //=> [<Coupon 10%>, <Sale 25%>]
 ~~~~
 
-Aliased to `revive`: `tj.revive(json, { ... })`.
+#### Custom loader function
+If your types can not easily be retrieved from a single namespace, or you can't implement `fromTypedJSON` on all of them, you can instead pass a function to perform the object construction. In this case, the `resolver` will not be used at all:
+
+~~~~js
+var customDeserializer = function(object, type, key) {
+  //=> object: { color: 'red' }
+  //=> type:   'Bike'
+  //=> key:    '_type'
+
+  if      (type === 'Car')  return new Automobile(object);
+  else if (type === 'Bike') return new Cycle(wheels: 2, color: object.color);
+  else andSoOn();
+};
+
+var transport = tj.parse('{ "_type": "Bike", "color": "red" }');
+transport instanceof Cycle //=> true
+~~~~
 
 ### .reviver({ key: '_type', ns: global })
 Returns a `reviver` function suitable for use with [JSON.parse][json-parse].
@@ -56,7 +74,7 @@ Returns a `reviver` function suitable for use with [JSON.parse][json-parse].
 If you are going to be calling `revive` a lot, you should probably keep one of these around:
 
 ~~~~js
-var reviver = tj.reviver({ key: 'ClassName', ns: app.models });
+var reviver = tj.reviver({ key: 'ClassName', resolver: app.models });
 //=> [Function]
 
 var user = JSON.parse('{ "ClassName": "User", "email": "user@example.com" }', reviver);

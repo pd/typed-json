@@ -12,9 +12,9 @@ test('typedJSON.revive() wraps JSON.parse(json, reviver())', function() {
 });
 
 suite('revival', function() {
-  var reviveNS = function(json, options) {
+  var revive = function(json, options) {
     options = options || {};
-    options.ns = NS;
+    options.resolver = NS;
     return tj.revive(json, options);
   };
 
@@ -58,19 +58,19 @@ suite('revival', function() {
   test('lookup types in different namespace', function() {
     T.fromTypedJSON = function(obj) { return 'pass'; };
     assert.equal(tj.revive('{ "_type": "Anything" }',
-                            { ns: { Anything: T } }),
+                            { resolver: { Anything: T } }),
                  'pass');
   });
 
   test('ignore "_type" without fromTypedJSON property', function() {
     delete T.fromTypedJSON;
-    assert.deepEqual(reviveNS('{ "_type": "T", "fn": "missing" }'),
+    assert.deepEqual(revive('{ "_type": "T", "fn": "missing" }'),
                      { _type: "T", fn: "missing" });
   });
 
   test('ignore "_type" with non-function fromTypedJSON', function() {
     T.fromTypedJSON = "I'm just a string";
-    assert.deepEqual(reviveNS('{ "_type": "T", "fn": "bad-type" }'),
+    assert.deepEqual(revive('{ "_type": "T", "fn": "bad-type" }'),
                      { _type: "T", fn: "bad-type" });
   });
 
@@ -80,13 +80,13 @@ suite('revival', function() {
       return 'pass';
     };
 
-    assert.equal(reviveNS('{ "_type": "T", "still": "here" }'),
+    assert.equal(revive('{ "_type": "T", "still": "here" }'),
                  'pass');
   });
 
   test('use key other than "_type"', function() {
     T.fromTypedJSON = function(obj) { return 'pass'; };
-    assert.equal(reviveNS('{ "__loader__": "T" }', { key: "__loader__" }),
+    assert.equal(revive('{ "__loader__": "T" }', { key: "__loader__" }),
                  'pass');
   });
 
@@ -99,7 +99,7 @@ suite('revival', function() {
     };
 
     var obj = tj.revive('{ "_viaFn": "Foo" }',
-                         { key: '_viaFn', ns: lookupType });
+                         { key: '_viaFn', resolver: lookupType });
     assert.equal(obj, 'pass');
   });
 
@@ -109,7 +109,7 @@ suite('revival', function() {
       return 'alternate-pass';
     };
 
-    assert.equal(reviveNS('{ "_type": "T", "diff": "fn-name" }', { fn: 'deserialize' }),
+    assert.equal(revive('{ "_type": "T", "diff": "fn-name" }', { loader: 'deserialize' }),
                  'alternate-pass');
   });
 
@@ -122,10 +122,10 @@ suite('revival', function() {
       return { foo: false };
     };
 
-    assert.deepEqual(tj.revive('{ "_type": "Foo", "custom": "deserializer" }', { fn: loader }),
+    assert.deepEqual(tj.revive('{ "_type": "Foo", "custom": "deserializer" }', { loader: loader }),
                      { foo: true });
 
-    assert.deepEqual(tj.revive('{ "_type": "Bar", "custom": "deserializer" }', { fn: loader }),
+    assert.deepEqual(tj.revive('{ "_type": "Bar", "custom": "deserializer" }', { loader: loader }),
                      { foo: false });
   });
 
@@ -142,7 +142,7 @@ suite('revival', function() {
     };
 
     var json = '[{ "_type": "A" }, { "_type": "B", "a": "my-a" }, { "C": { "_type": "A" } }]';
-    assert.deepEqual(tj.revive(json, { ns: { A: A, B: B } }),
+    assert.deepEqual(tj.revive(json, { resolver: { A: A, B: B } }),
                      ['A', 'B', { C: 'A' }]);
   });
 
@@ -154,7 +154,7 @@ suite('revival', function() {
     };
 
     assert.equal(tj.revive('{ "__load": "Fake", "still": "works" }',
-                            { key: '__load', ns: { Fake: T } }),
+                            { key: '__load', resolver: { Fake: T } }),
                  'pass');
   });
 
@@ -165,7 +165,7 @@ suite('revival', function() {
 
     T.fromTypedJSON = function() { throw new Error('pass'); };
     assert.throws(function() {
-      reviveNS('{ "_type": "T" }');
+      revive('{ "_type": "T" }');
     }, Error, 'pass');
   });
 
