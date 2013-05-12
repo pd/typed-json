@@ -29,7 +29,7 @@ Options:
 
 - **key**: The name of the property used to identify the type.
 - **loader**:  If a string, it is the name of the function to call after identifying a type using the `resolver`. If a function, it will be called directly to deserialize the current JSON object.
-- **resolver**: If an object, type names are expected to correspond to properties of the object (eg, if `resolver: { Foo: ..., Bar: ... }`, types `Foo` and `Bar` are available. If a function, it will be called with the type name encountered, and is expected to return an object that responds to the `loader` method, which will be used to deserialize the object.
+- **resolver**: If an object, type names are expected to correspond to properties of the object (eg, if `resolver: { Foo: ..., Bar: ... }`, types `Foo` and `Bar` are available). If a function, it will be called with the type name encountered, and is expected to return an object that responds to the `loader` method, which will be used to deserialize the object.
 
 #### Custom key name and type lookup
 ~~~~js
