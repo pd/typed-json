@@ -33,24 +33,20 @@ tj.reviver = function(options) {
   return function(key, value) {
     var id, type;
 
-    if (value === null || typeof value !== 'object')
+    if (!value || !value.hasOwnProperty(typeKey))
       return value;
 
     id = value[typeKey];
-    if (typeof id === 'undefined')
-      return value;
-
     if (typeof loader === 'function') {
       delete value[typeKey];
       return loader(value, id, typeKey);
     }
 
     if (typeof resolver === 'function')
-      type = resolver.call(undefined, id, typeKey, value);
-    else
+      type = resolver(id, typeKey, value);
+    else if (resolver.hasOwnProperty(id))
       type = resolver[id];
-
-    if (!type)
+    else
       return value;
 
     if (typeof type[loader] !== 'function')

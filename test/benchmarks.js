@@ -15,7 +15,7 @@ var NS = {
 };
 
 suite('no types found', function() {
-  var json    = '[{ "foo": "bar" }]';
+  var json    = '{ "foo": "bar" }';
   var reviver = tj.reviver();
 
   bench('Raw JSON.parse', function() {
@@ -40,7 +40,7 @@ suite('no types found', function() {
 });
 
 suite('types found', function() {
-  var json    = '[{ "_type": "Widget", "name": "foo" }]';
+  var json    = '{ "_type": "Widget", "name": "foo", "size": 100 }';
   var revopts = { resolver: NS };
   var reviver = tj.reviver(revopts);
 
@@ -71,12 +71,12 @@ suite('types found', function() {
 
 suite('custom loader fn', function() {
   function loader(obj, type, key) {
-    if (type === 'Foo') return 'foo!';
-    else if (type === 'Bar') return 'bar!';
-    else return 'baz?';
+    if (type === 'Widget')
+      return new Widget(obj.name, obj.size);
+    return obj;
   }
 
-  var json    = '[{ "_type": "Foo" }, { "_type": "Bar" }, { "_type": "NoSuchType" }]';
+  var json    = '{ "_type": "Widget", "name": "foo", "size": 100 }';
   var revopts = { loader: loader };
   var reviver = tj.reviver(revopts);
 
@@ -92,18 +92,17 @@ suite('custom loader fn', function() {
     JSON.parse(json, reviver);
   });
 
-  var stringifyingReviver = function(key, value) {
+  var customReviver = function(key, value) {
     if (!value)
       return value;
     if (!value.hasOwnProperty('_type'))
       return value;
 
-    if (value._type === 'Foo') return 'foo!';
-    else if (value._type === 'Bar') return 'bar!';
-    else return 'baz?';
+    if (value._type === 'Widget') return new Widget(value.name, value.size);
+    return value;
   };
 
   bench('JSON.parse(json, customReviver)', function() {
-    JSON.parse(json, stringifyingReviver);
+    JSON.parse(json, customReviver);
   });
 });
