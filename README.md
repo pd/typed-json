@@ -64,7 +64,9 @@ var customDeserializer = function(object, type, key) {
   else andSoOn();
 };
 
-var transport = tj.parse('{ "_type": "Bike", "color": "red" }');
+var transport = tj.parse('{ "_type": "Bike", "color": "red" }', {
+  loader: customDeserializer
+});
 transport instanceof Cycle //=> true
 ~~~~
 
